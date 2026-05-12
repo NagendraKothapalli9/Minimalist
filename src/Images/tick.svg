@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="48px" height="48px" viewBox="0 0 48 48" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Group</title>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Artboard" transform="translate(-665, -482)">
+            <g id="Group" transform="translate(665, 482)">
+                <rect id="Rectangle" fill="#FFFFFF" x="0" y="0" width="48" height="48"></rect>
+                <polygon id="Path" fill="#000000" fill-rule="nonzero" transform="translate(24, 24.497) rotate(10) translate(-24, -24.497)" points="34.997098 13 21.4971551 32.4388735 12.5411102 25.1270898 11 27.015751 21.997098 35.9939755 37 14.3903102"></polygon>
+            </g>
+        </g>
+    </g>
+</svg>

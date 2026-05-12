@@ -10,10 +10,12 @@ import CardContent from "@mui/material/CardContent";
 import Button from "@mui/material/Button";
 import StarRating from "../Components/StarRating";
 import { Theme } from "../GlobalStyles";
+import { useNavigate } from "react-router";
 
 const HomeCard = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
+  
   const [page, setPage] = useState(0);
 
   useEffect(() => {
@@ -32,9 +34,9 @@ const HomeCard = () => {
   const getItemsPerPage = () => {
     const width = window.innerWidth;
 
-    if (width < 600) return 1;        // mobile
-    if (width < 960) return 1;        // tablet
-    return 4;                         // laptop / desktop
+    if (width < 600) return 1;      
+    if (width < 960) return 1;        
+    return 4;                         
   };
 
   const [itemsPerPage, setItemsPerPage] = useState(getItemsPerPage());
@@ -66,10 +68,10 @@ const HomeCard = () => {
       <Box sx={{ display: 'flex' }}>
 
                 {paginatedItems.map((item) => (
-                    <Card key={item.id} sx={{ width: '300px', mx: "auto" }}>
+                    <Card key={item.id} sx={{ width: '300px', mx: "auto" }} onClick={() => navigate(`/product/${item.id}`)}>
                         <CustomSlider
-                            height="450px"
-                            width="100%"
+                            height="440px"
+                            width="auto"
                             objectFit="cover"
                             images={[
                                 item.img1,

@@ -1,6 +1,6 @@
 import API from "../../api/CommonApi";
 const api = new API();
-const endPoints = "products.json";
+const endPoints = "cart.json";
 
 export const saveProductData = async (newProduct) => {
 

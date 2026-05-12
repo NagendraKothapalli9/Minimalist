@@ -50,7 +50,7 @@ container: {
    
   },
   font18SemiBold: {
-    fontFamily: 'Proxima-Nova-Light',
+    fontFamily: 'Proxima-Nova-Semibold',
     fontSize: 18,
    
 
@@ -62,7 +62,7 @@ container: {
   },
   headings: {
     fontFamily: 'Proxima-Nova-Regular',
-    fontSize: 50,
+    fontSize: 45,
  
   }
  
