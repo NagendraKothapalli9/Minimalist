@@ -55,6 +55,12 @@ container: {
    
 
   },
+  font36SemiBold: {
+    fontFamily: 'Proxima-Nova-Semibold',
+    fontSize: 36,
+   
+
+  },
   font18Regular: {
     fontFamily: 'Proxima-Nova-Regular',
     fontSize: 18,
