@@ -29,7 +29,8 @@ const LoginModal = ({
   setUser,
   openProfile,
 }) => {
-  const [email, setEmail] = useState("");
+  const [email, setEmail] =
+    useState("");
 
   const [password, setPassword] =
     useState("");
@@ -37,10 +38,31 @@ const LoginModal = ({
   const [isSignup, setIsSignup] =
     useState(false);
 
-  const [successMessage, setSuccessMessage] =
-    useState("");
+  const [
+    successMessage,
+    setSuccessMessage,
+  ] = useState("");
 
   if (!open) return null;
+
+  /* SAVE USER */
+  const saveUserData = (firebaseUser) => {
+    const userData = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      displayName:
+        firebaseUser.displayName || "",
+      photoURL:
+        firebaseUser.photoURL || "",
+    };
+
+    localStorage.setItem(
+      "user",
+      JSON.stringify(userData)
+    );
+
+    setUser(userData);
+  };
 
   // GOOGLE LOGIN
   const googleLogin = async () => {
@@ -54,24 +76,20 @@ const LoginModal = ({
           provider
         );
 
-      console.log(result.user);
-
-      /* SAVE USER */
-      setUser(result.user);
+      saveUserData(result.user);
 
       setSuccessMessage(
         result.user.displayName ||
           result.user.email
       );
 
-      // CLOSE MODAL + OPEN PROFILE
       setTimeout(() => {
         setSuccessMessage("");
 
         onClose();
 
         openProfile();
-      }, 3000);
+      }, 2000);
     } catch (error) {
       console.log(error);
 
@@ -97,23 +115,19 @@ const LoginModal = ({
           password
         );
 
-      console.log(result.user);
-
-      /* SAVE USER */
-      setUser(result.user);
+      saveUserData(result.user);
 
       setSuccessMessage(
         result.user.email
       );
 
-      // CLOSE MODAL + OPEN PROFILE
       setTimeout(() => {
         setSuccessMessage("");
 
         onClose();
 
         openProfile();
-      }, 3000);
+      }, 2000);
     } catch (error) {
       console.log(error);
 
@@ -145,23 +159,19 @@ const LoginModal = ({
           password
         );
 
-      console.log(result.user);
-
-      /* SAVE USER */
-      setUser(result.user);
+      saveUserData(result.user);
 
       setSuccessMessage(
         result.user.email
       );
 
-      // CLOSE MODAL + OPEN PROFILE
       setTimeout(() => {
         setSuccessMessage("");
 
         onClose();
 
         openProfile();
-      }, 3000);
+      }, 2000);
     } catch (error) {
       console.log(error);
 
@@ -253,7 +263,6 @@ const LoginModal = ({
             justifyContent: "center",
           }}
         >
-          {/* SUCCESS SCREEN */}
           {successMessage ? (
             <Box
               sx={{
@@ -266,7 +275,6 @@ const LoginModal = ({
                 textAlign: "center",
               }}
             >
-              {/* ICON */}
               <Typography
                 sx={{
                   fontSize: "32px",
@@ -276,7 +284,6 @@ const LoginModal = ({
                 🎉
               </Typography>
 
-              {/* TITLE */}
               <Typography
                 sx={{
                   fontSize: "34px",
@@ -290,7 +297,6 @@ const LoginModal = ({
                 Successful
               </Typography>
 
-              {/* USER */}
               <Typography
                 sx={{
                   mt: 2,
@@ -300,56 +306,6 @@ const LoginModal = ({
               >
                 {successMessage}
               </Typography>
-
-              {/* LOADING */}
-              <Box
-                sx={{
-                  mt: 6,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                }}
-              >
-                <Box
-                  sx={{
-                    width: "18px",
-                    height: "18px",
-
-                    border:
-                      "3px solid #000",
-
-                    borderTop:
-                      "3px solid transparent",
-
-                    borderRadius: "50%",
-
-                    animation:
-                      "spin 1s linear infinite",
-
-                    "@keyframes spin":
-                      {
-                        "0%": {
-                          transform:
-                            "rotate(0deg)",
-                        },
-
-                        "100%": {
-                          transform:
-                            "rotate(360deg)",
-                        },
-                      },
-                  }}
-                />
-
-                <Typography
-                  sx={{
-                    fontSize: "18px",
-                    color: "#111",
-                  }}
-                >
-                  Logging you in
-                </Typography>
-              </Box>
             </Box>
           ) : (
             <>

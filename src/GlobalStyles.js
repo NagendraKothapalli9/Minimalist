@@ -14,6 +14,11 @@ container: {
     fontSize: 14,
  
   },
+   font12Regular: {
+    fontFamily: 'Proxima-Nova-Regular',
+    fontSize: 12,
+ 
+  },
    font15Regular: {
     fontFamily: 'Proxima-Nova-Regular',
     fontSize: 15,

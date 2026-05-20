@@ -1,21 +1,57 @@
-import { Route, Routes } from "react-router";
+import React, {
+  useState,
+} from "react";
+
+import {
+  Routes,
+  Route,
+} from "react-router-dom";
+
 import MuiNavbar1 from "./Components/Navbar1";
-import Cart from "./Pages/Cart";
+
+import CartDrawer from "./Pages/Cart";
+
 import Home from "./Pages/Home";
+
 import ProductDetails from "./Pages/ProductDetails";
 
-function App() {
+const App = () => {
+  const [cartOpen, setCartOpen] =
+    useState(false);
+
   return (
-    <div className="App">
-      <MuiNavbar1/>
-       <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/cart" element={<Cart />} />
-          <Route path='/product/:Id' element={<ProductDetails/>}/>
-         
-        </Routes>
-    </div>
+    <>
+    
+      <MuiNavbar1
+        openCart={() =>
+          setCartOpen(true)
+        }
+      />
+
+     
+      <CartDrawer
+        open={cartOpen}
+        onClose={() =>
+          setCartOpen(false)
+        }
+      />
+
+      
+      <Routes>
+        <Route
+          path="/"
+          element={<Home />}
+        />
+
+        <Route
+          path="/product/:Id"
+          element={
+            <ProductDetails />
+          }
+        />
+      </Routes>
+    </>
   );
-}
+};
 
 export default App;

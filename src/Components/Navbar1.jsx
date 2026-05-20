@@ -1,16 +1,15 @@
-import React, { useState } from "react";
-
+import React, { useState, useEffect } from "react";
 import {
-    AppBar,
-    Toolbar,
-    Typography,
-    Box,
-    IconButton,
-    Badge,
-    Drawer,
-    List,
-    ListItem,
-    Divider,
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  IconButton,
+  Badge,
+  Drawer,
+  List,
+  ListItem,
+  Divider,
 } from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
@@ -25,376 +24,472 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import YouTubeIcon from "@mui/icons-material/YouTube";
 
+import { onAuthStateChanged } from "firebase/auth";
+import { useSelector } from "react-redux";
+import { auth } from "../firebase";
 import { Theme } from "../GlobalStyles";
-
 import NavSlider from "./NavSlider";
-
-/* LOGIN MODAL */
 import LoginModal from "./LoginModal";
-
-/* PROFILE MODAL */
 import UserProfileModal from "./UserProfile";
+import { useNavigate } from "react-router-dom";
 
-const MuiNavbar1 = () => {
-    const [mobileOpen, setMobileOpen] = useState(false);
+const MuiNavbar1 = ({ openCart }) => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [activeMenu, setActiveMenu] = useState(null);
 
-    /* LOGIN MODAL */
-    const [loginOpen, setLoginOpen] = useState(false);
+  const navigate = useNavigate();
 
-    /* PROFILE MODAL */
-    const [profileOpen, setProfileOpen] = useState(false);
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      (currentUser) => {
+        if (currentUser) {
+          const userData = {
+            uid: currentUser.uid,
+            email: currentUser.email,
+            displayName:
+              currentUser.displayName || "",
+            photoURL:
+              currentUser.photoURL || "",
+          };
 
-    /* USER */
-    const [user, setUser] = useState(null);
-
-    const menuItems = [
-        "Shop",
-        "Best Sellers",
-        "Skin & Body Care",
-        "Baby Care",
-        "Hair Care",
-        "AI Assistants",
-        "Track Order",
-    ];
-
-    const handleDrawerToggle = () =>
-        setMobileOpen(!mobileOpen);
-
-    /* ACCOUNT CLICK */
-    const handleAccountClick = () => {
-        if (user) {
-            setProfileOpen(true);
+          setUser(userData);
         } else {
-            setLoginOpen(true);
+          setUser(null);
         }
-    };
-
-    const navItemStyles = {
-        position: "relative",
-        display: "inline-block",
-        cursor: "pointer",
-
-        "&::after": {
-            content: '""',
-            position: "absolute",
-            left: 0,
-            bottom: -2,
-            width: "100%",
-            height: "2px",
-            backgroundColor: "black",
-            transform: "scaleX(0)",
-            transformOrigin: "left",
-            transition: "transform 0.3s ease",
-        },
-
-        "&:hover::after": {
-            transform: "scaleX(1)",
-        },
-
-        ...Theme.font16SemiBold,
-    };
-
-    return (
-        <Box>
-            <NavSlider />
-
-            <AppBar
-                position="static"
-                sx={{
-                    backgroundColor: "#fff",
-                    color: "#000",
-                    boxShadow: "none",
-                    borderBottom: "1px solid #eee",
-                    px: { xs: 0, md: 4 },
-                }}
-            >
-                <Toolbar
-                    sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                    }}
-                >
-                    {/* MOBILE LEFT */}
-                    <Box
-                        sx={{
-                            display: { xs: "flex", md: "none" },
-                            alignItems: "center",
-                        }}
-                    >
-                        <IconButton
-                            onClick={handleDrawerToggle}
-                            sx={{ color: "black", p: 1 }}
-                        >
-                            <MenuIcon />
-                        </IconButton>
-
-                        <IconButton
-                            sx={{ color: "black", p: 1 }}
-                        >
-                            <SearchIcon />
-                        </IconButton>
-                    </Box>
-
-                    {/* LOGO */}
-                    <Box
-                        sx={{
-                            position: {
-                                xs: "absolute",
-                                md: "static",
-                            },
-
-                            left: {
-                                xs: "50%",
-                            },
-
-                            transform: {
-                                xs: "translateX(-50%)",
-                                md: "none",
-                            },
-                        }}
-                    >
-                        <Box
-                            component="img"
-                            src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898230/nav_logo_l4jgwz.webp"
-                            alt="logo"
-                            sx={{
-                                height: {
-                                    xs: "20px",
-                                    md: "25px",
-                                },
-
-                                width: "auto",
-                                display: "block",
-                            }}
-                        />
-                    </Box>
-
-                    {/* DESKTOP MENU */}
-                    <Box
-                        sx={{
-                            display: {
-                                xs: "none",
-                                md: "flex",
-                            },
-
-                            gap: 5,
-                        }}
-                    >
-                        {menuItems.map((item, index) => (
-                            <Typography
-                                key={index}
-                                sx={navItemStyles}
-                            >
-                                {item}
-                            </Typography>
-                        ))}
-                    </Box>
-
-                    {/* RIGHT ICONS */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            alignItems: "center",
-                        }}
-                    >
-                        {/* STAR */}
-                        <IconButton
-                            sx={{
-                                color: "black",
-                                p: 1,
-                            }}
-                        >
-                            <StarBorderIcon
-                                sx={{
-                                    fontSize: {
-                                        md: "28px",
-                                        xs: "25px",
-                                    },
-                                }}
-                            />
-                        </IconButton>
-
-                        {/* DESKTOP SEARCH + ACCOUNT */}
-                        <Box
-                            sx={{
-                                display: {
-                                    xs: "none",
-                                    md: "flex",
-                                },
-
-                                alignItems: "center",
-                            }}
-                        >
-                            {/* SEARCH */}
-                            <IconButton
-                                sx={{ color: "black" }}
-                            >
-                                <SearchIcon
-                                    sx={{
-                                        fontSize: {
-                                            md: "28px",
-                                            xs: "25px",
-                                        },
-                                    }}
-                                />
-                            </IconButton>
-
-                            {/* ACCOUNT */}
-                            <IconButton
-                                sx={{ color: "black" }}
-                                onClick={handleAccountClick}
-                            >
-                                <PersonOutlineOutlinedIcon
-                                    sx={{
-                                        fontSize: {
-                                            md: "28px",
-                                            xs: "25px",
-                                        },
-                                    }}
-                                />
-                            </IconButton>
-                        </Box>
-
-                        {/* CART */}
-                        <IconButton sx={{ p: 1 }}>
-                            <Badge
-                                badgeContent={6}
-                                sx={{
-                                    "& .MuiBadge-badge": {
-                                        backgroundColor: "black",
-                                        color: "white",
-                                    },
-                                }}
-                            >
-                                <ShoppingCartOutlinedIcon
-                                    sx={{
-                                        color: "black",
-
-                                        fontSize: {
-                                            md: "28px",
-                                            xs: "20px",
-                                        },
-                                    }}
-                                />
-                            </Badge>
-                        </IconButton>
-                    </Box>
-                </Toolbar>
-            </AppBar>
-
-            {/* MOBILE DRAWER */}
-            <Drawer
-                anchor="left"
-                open={mobileOpen}
-                onClose={handleDrawerToggle}
-                PaperProps={{
-                    sx: {
-                        width: "100%",
-                        maxWidth: "350px",
-                    },
-                }}
-            >
-                <Box sx={{ p: 2 }}>
-                    {/* HEADER */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent:
-                                "space-between",
-                            alignItems: "center",
-                        }}
-                    >
-                        <Typography
-                            sx={{
-                                ...Theme.font16SemiBold,
-                                textTransform: "uppercase",
-                            }}
-                        >
-                            Menu
-                        </Typography>
-
-                        <IconButton
-                            onClick={handleDrawerToggle}
-                        >
-                            <CloseIcon />
-                        </IconButton>
-                    </Box>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    {/* MENU */}
-                    <List>
-                        {menuItems.map((item, index) => (
-                            <React.Fragment key={index}>
-                                <ListItem sx={{ py: 1.5 }}>
-                                    <Typography
-                                        sx={Theme.font16SemiBold}
-                                    >
-                                        {item}
-                                    </Typography>
-                                </ListItem>
-
-                                <Divider
-                                    variant="middle"
-                                    component="li"
-                                    sx={{ ml: 0 }}
-                                />
-                            </React.Fragment>
-                        ))}
-
-                        {/* ACCOUNT MOBILE */}
-                        <ListItem
-                            sx={{
-                                py: 1.5,
-                                cursor: "pointer",
-                            }}
-                            onClick={() => {
-                                handleAccountClick();
-                                setMobileOpen(false);
-                            }}
-                        >
-                            <Typography
-                                sx={Theme.font16SemiBold}
-                            >
-                                Account
-                            </Typography>
-                        </ListItem>
-                    </List>
-
-                    {/* SOCIAL */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            gap: 2,
-                            p: 2,
-                            mt: 2,
-                        }}
-                    >
-                        <EmailIcon sx={{ color: "#666" }} />
-                        <FacebookIcon sx={{ color: "#666" }} />
-                        <InstagramIcon sx={{ color: "#666" }} />
-                        <YouTubeIcon sx={{ color: "#666" }} />
-                    </Box>
-                </Box>
-            </Drawer>
-
-            {/* LOGIN MODAL */}
-            <LoginModal
-                open={loginOpen}
-                onClose={() => setLoginOpen(false)}
-                setUser={setUser}
-                openProfile={() => setProfileOpen(true)}
-            />
-
-            {/* PROFILE MODAL */}
-            <UserProfileModal
-                open={profileOpen}
-                onClose={() => setProfileOpen(false)}
-                user={user}
-                setUser={setUser}
-            />
-        </Box>
+      }
     );
+
+    return () => unsubscribe();
+  }, []);
+
+  const productState = useSelector(
+    (state) => state.getproductdata
+  );
+
+  const products =
+    productState?.data || [];
+
+  const shopProducts =
+    products.filter(
+      (p) =>
+        p?.categories?.toLowerCase() ===
+        "shop"
+    );
+
+  const bestSellersProducts =
+    products.filter(
+      (p) =>
+        p?.categories ===
+        "Best Sellers"
+    );
+
+  const babyCareProducts =
+    products.filter(
+      (p) =>
+        p?.categories ===
+        "Baby Care"
+    );
+
+  const dropdownData = {
+    Shop: shopProducts.slice(
+      0,
+      8
+    ),
+
+    "Best Sellers":
+      bestSellersProducts.slice(
+        0,
+        8
+      ),
+
+    "Baby Care":
+      babyCareProducts.slice(
+        0,
+        8
+      ),
+  };
+
+  const skinBodyCareColumns = {
+    "Shop by Concern": [
+      "Acne",
+      "Pigmentation",
+      "Dryness",
+      "UV Damage",
+      "Oiliness",
+      "Dullness",
+      "Aging",
+    ],
+
+    "Shop by Ingredients": [
+      "Vitamin C",
+      "Niacinamide",
+      "Ceramide",
+      "Retinol",
+      "Salicylic Acid",
+    ],
+
+    "Skin Care": [
+      "Cleanse",
+      "Tone",
+      "Treat",
+      "Moisturize",
+      "SPF",
+    ],
+
+    "Body Care": [
+      "Body Wash",
+      "Lotion",
+      "Roll On",
+    ],
+  };
+
+  const hairCareColumns = {
+    "Shop by Concern": [
+      "Hair Fall",
+      "Damaged Hair",
+      "Dandruff",
+      "Frizzy Hair",
+      "Oily Scalp",
+    ],
+
+    "Shop by Ingredients": [
+      "Capixyl",
+      "Peptide",
+      "Carnitine",
+      "Maleic Acid",
+    ],
+
+    Hair: [
+      "Treat",
+      "Shampoo",
+      "Conditioner",
+      "Mask",
+    ],
+  };
+
+  const getUsersState =
+    useSelector(
+      (state) =>
+        state.getuserdata
+    );
+
+  const usersData =
+    getUsersState?.data || [];
+
+  const existingUser =
+    usersData.find(
+      (item) =>
+        item.email === user?.email
+    );
+
+  const cartCount =
+    existingUser?.cart?.reduce(
+      (acc, item) =>
+        acc +
+        Number(
+          item?.quantity || 1
+        ),
+      0
+    ) || 0;
+
+  const menuItems = [
+    "Shop",
+    "Best Sellers",
+    "Skin & Body Care",
+    "Baby Care",
+    "Hair Care",
+    "AI Assistants",
+    "Track Order",
+  ];
+
+  const navItemStyles = {
+    position: "relative",
+    display: "inline-block",
+    cursor: "pointer",
+
+    "&::after": {
+      content: '""',
+      position: "absolute",
+      left: 0,
+      bottom: -2,
+      width: "100%",
+      height: "2px",
+      backgroundColor: "black",
+      transform: "scaleX(0)",
+      transformOrigin: "left",
+      transition:
+        "transform .3s",
+    },
+
+    "&:hover::after": {
+      transform:
+        "scaleX(1)",
+    },
+
+    ...Theme.font16SemiBold,
+  };
+
+  return (
+    <Box>
+      <NavSlider />
+
+      <AppBar
+        position="relative"
+        sx={{
+          backgroundColor:
+            "#fff",
+          color: "#000",
+          boxShadow: "none",
+          borderBottom:
+            "1px solid #eee",
+          px: { xs: 0, md: 4 },
+        }}
+      >
+        <Toolbar
+          sx={{
+            display: "flex",
+            justifyContent:
+              "space-between",
+          }}
+        >
+          <Box
+            component="img"
+            src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898230/nav_logo_l4jgwz.webp"
+            onClick={() =>
+              navigate("/")
+            }
+            sx={{
+              cursor: "pointer",
+              height: {
+                xs: 20,
+                md: 25,
+              },
+            }}
+          />
+
+          <Box
+            sx={{
+              display: {
+                xs: "none",
+                md: "flex",
+              },
+              gap: 5,
+            }}
+          >
+            {menuItems.map(
+              (item) => (
+                <Typography
+                  key={item}
+                  sx={
+                    navItemStyles
+                  }
+                  onMouseEnter={() =>
+                    setActiveMenu(
+                      item
+                    )
+                  }
+                >
+                  {item}
+                </Typography>
+              )
+            )}
+          </Box>
+
+          <Box display="flex">
+            <IconButton>
+              <StarBorderIcon />
+            </IconButton>
+
+            <IconButton>
+              <SearchIcon />
+            </IconButton>
+
+            <IconButton
+              onClick={() =>
+                user
+                  ? setProfileOpen(
+                      true
+                    )
+                  : setLoginOpen(
+                      true
+                    )
+              }
+            >
+              <PersonOutlineOutlinedIcon />
+            </IconButton>
+
+            <IconButton
+              onClick={
+                openCart
+              }
+            >
+              <Badge
+                badgeContent={
+                  cartCount
+                }
+              >
+                <ShoppingCartOutlinedIcon />
+              </Badge>
+            </IconButton>
+          </Box>
+        </Toolbar>
+
+        <Box
+          onMouseLeave={() =>
+            setActiveMenu(null)
+          }
+          sx={{
+            position: "absolute",
+            top: "100%",
+            width: "100%",
+            background:
+              "#fff",
+            zIndex: 999,
+            overflow: "hidden",
+            minHeight:
+              activeMenu
+                ? "450px"
+                : 0,
+            transition:
+              ".3s",
+          }}
+        >
+          <Box
+            sx={{
+              p: 5,
+              display: "flex",
+              gap: 6,
+              flexWrap: "wrap",
+            }}
+          >
+            {(activeMenu ===
+              "Hair Care" ||
+              activeMenu ===
+                "Skin & Body Care") && (
+              <>
+                {Object.entries(
+                  activeMenu ===
+                    "Hair Care"
+                    ? hairCareColumns
+                    : skinBodyCareColumns
+                ).map(
+                  (
+                    [
+                      title,
+                      items,
+                    ],
+                    i
+                  ) => (
+                    <Box
+                      key={i}
+                    >
+                      <Typography
+                        sx={{
+                          ...Theme.font16SemiBold,
+                          mb: 2,
+                        }}
+                      >
+                        {title}
+                      </Typography>
+
+                      {items.map(
+                        (
+                          item,
+                          idx
+                        ) => (
+                          <Typography
+                            key={
+                              idx
+                            }
+                            sx={{
+                              mb: 1,
+                            }}
+                          >
+                            {item}
+                          </Typography>
+                        )
+                      )}
+                    </Box>
+                  )
+                )}
+              </>
+            )}
+
+            {dropdownData[
+              activeMenu
+            ]?.map(
+              (
+                product
+              ) => (
+                <Box
+                  key={
+                    product.id
+                  }
+                  sx={{
+                    width: 180,
+                  }}
+                >
+                  <Box
+                    component="img"
+                    src={
+                      product.img ||
+                      product.img1
+                    }
+                    sx={{
+                      width:
+                        "100%",
+                      height:
+                        240,
+                      objectFit:
+                        "cover",
+                    }}
+                  />
+
+                  <Typography
+                    mt={1}
+                    sx={
+                      Theme.font16SemiBold
+                    }
+                  >
+                    {
+                      product.Name
+                    }
+                  </Typography>
+
+                  <Typography>
+                    ₹
+                    {
+                      product.Price
+                    }
+                  </Typography>
+                </Box>
+              )
+            )}
+          </Box>
+        </Box>
+      </AppBar>
+
+      <LoginModal
+        open={loginOpen}
+        onClose={() =>
+          setLoginOpen(false)
+        }
+        setUser={setUser}
+      />
+
+      <UserProfileModal
+        open={profileOpen}
+        onClose={() =>
+          setProfileOpen(false)
+        }
+        user={user}
+      />
+    </Box>
+  );
 };
 
 export default MuiNavbar1;
