@@ -142,13 +142,13 @@ const ProductDetails = () => {
   /* ACCORDION */
   const handleAccordionChange =
     (panel) =>
-    (event, isExpanded) => {
-      setExpanded(
-        isExpanded
-          ? panel
-          : false
-      );
-    };
+      (event, isExpanded) => {
+        setExpanded(
+          isExpanded
+            ? panel
+            : false
+        );
+      };
 
   /* ADD TO CART */
   const handleAddToCart =
@@ -184,18 +184,18 @@ const ProductDetails = () => {
           return;
         }
 
-       const cartProduct = {
-  firebaseKey: Date.now(),
+        const cartProduct = {
+          firebaseKey: Date.now(),
 
-  productId: items?.id,
-  productName: items?.Name,
-  price: items?.Price,
-  mrp: items?.MRP,
-  offer: items?.Offer,
-  quantity,
-  image: items?.img1,
-  size: items?.size,
-};
+          productId: items?.id,
+          productName: items?.Name,
+          price: items?.Price,
+          mrp: items?.MRP,
+          offer: items?.Offer,
+          quantity,
+          image: items?.img1,
+          size: items?.size,
+        };
 
         const existingCart =
           currentUser?.cart || [];
@@ -214,13 +214,13 @@ const ProductDetails = () => {
             existingCart.map(
               (item) =>
                 item.productId ===
-                items?.id
+                  items?.id
                   ? {
-                      ...item,
-                      quantity:
-                        item.quantity +
-                        quantity,
-                    }
+                    ...item,
+                    quantity:
+                      item.quantity +
+                      quantity,
+                  }
                   : item
             );
         } else {
@@ -296,9 +296,9 @@ const ProductDetails = () => {
     px: 0,
 
     "& .MuiAccordionSummary-content":
-      {
-        margin: "20px 0",
-      },
+    {
+      margin: "20px 0",
+    },
   };
 
   return (
@@ -374,7 +374,7 @@ const ProductDetails = () => {
             </Box>
           </Box>
 
-          {/* RIGHT DETAILS */}
+          
           <Box
             sx={{
               flex: {
@@ -436,7 +436,7 @@ const ProductDetails = () => {
 
               <Divider />
 
-              {/* HIGHLIGHTS */}
+             
               <Box
                 sx={{
                   display: "flex",
@@ -508,7 +508,7 @@ const ProductDetails = () => {
                 post-delivery.
               </Button>
 
-              {/* CHOOSE VARIANTS */}
+           
               <Box
                 sx={{
                   border:
@@ -695,7 +695,7 @@ const ProductDetails = () => {
               {/* QUANTITY + ADD */}
               <Box
                 sx={{
-                  display: "flex",
+                  display: { xs: 'grid', md: 'flex' },
                   gap: 2,
                   alignItems:
                     "stretch",
@@ -705,22 +705,21 @@ const ProductDetails = () => {
                   direction="row"
                   alignItems="center"
                   sx={{
-                    border:
-                      "1px solid #d9d9d9",
-
+                    border: "1px solid #d9d9d9",
                     borderRadius: 1,
-
-                    overflow:
-                      "hidden",
+                    overflow: "hidden",
+                    
+                    width: { xs: "100%", sm: "auto" },
+                    maxWidth: { xs: "180px", sm: "none" },
                   }}
                 >
                   <IconButton
-                    onClick={
-                      handleDecrease
-                    }
+                    onClick={handleDecrease}
                     sx={{
                       borderRadius: 0,
-                      p: 1.5,
+                      
+                      p: { xs: 1, sm: 1.2, md: 1.5 },
+                      flex: { xs: 1, sm: "initial" }
                     }}
                   >
                     <RemoveIcon fontSize="small" />
@@ -728,31 +727,23 @@ const ProductDetails = () => {
 
                   <Box
                     sx={{
-                      width:
-                        "100px",
-
-                      textAlign:
-                        "center",
-
-                      borderLeft:
-                        "1px solid #d9d9d9",
-
-                      borderRight:
-                        "1px solid #d9d9d9",
-
-                      display:
-                        "flex",
-
-                      justifyContent:
-                        "center",
-
-                      alignItems:
-                        "center",
+                    
+                      width: { xs: "60px", sm: "80px", md: "100px" },
+                      textAlign: "center",
+                      borderLeft: "1px solid #d9d9d9",
+                      borderRight: "1px solid #d9d9d9",
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                      
+                      height: "100%",
                     }}
                   >
                     <Typography
                       sx={{
                         ...Theme.font16SemiBold,
+                       
+                        fontSize: { xs: "14px", sm: "15px", md: "16px" }
                       }}
                     >
                       {quantity}
@@ -760,18 +751,16 @@ const ProductDetails = () => {
                   </Box>
 
                   <IconButton
-                    onClick={
-                      handleIncrease
-                    }
+                    onClick={handleIncrease}
                     sx={{
                       borderRadius: 0,
-                      p: 1.5,
+                      p: { xs: 1, sm: 1.2, md: 1.5 },
+                      flex: { xs: 1, sm: "initial" }
                     }}
                   >
                     <AddIcon fontSize="small" />
                   </IconButton>
                 </Stack>
-
                 <Button
                   fullWidth
                   onClick={
@@ -789,6 +778,9 @@ const ProductDetails = () => {
 
                     fontWeight: 600,
 
+
+                    fontSize: { xs: '12px' },
+
                     "&:hover": {
                       bgcolor:
                         "#222",
@@ -797,6 +789,7 @@ const ProductDetails = () => {
                 >
                   ADD TO CART
                 </Button>
+
               </Box>
 
               {/* ACCORDIONS */}
@@ -816,7 +809,7 @@ const ProductDetails = () => {
                   <AccordionSummary
                     expandIcon={
                       expanded ===
-                      "panel1" ? (
+                        "panel1" ? (
                         <RemoveIcon />
                       ) : (
                         <AddIcon />
@@ -912,10 +905,10 @@ const ProductDetails = () => {
             pb: 2,
 
             "&::-webkit-scrollbar":
-              {
-                display:
-                  "none",
-              },
+            {
+              display:
+                "none",
+            },
           }}
         >
           {offers.map(
@@ -955,30 +948,30 @@ const ProductDetails = () => {
                     "100px",
 
                   "&::before, &::after":
-                    {
-                      content:
-                        '""',
+                  {
+                    content:
+                      '""',
 
-                      position:
-                        "absolute",
+                    position:
+                      "absolute",
 
-                      top: "50%",
+                    top: "50%",
 
-                      width:
-                        "20px",
+                    width:
+                      "20px",
 
-                      height:
-                        "20px",
+                    height:
+                      "20px",
 
-                      bgcolor:
-                        "#fff",
+                    bgcolor:
+                      "#fff",
 
-                      borderRadius:
-                        "50%",
+                    borderRadius:
+                      "50%",
 
-                      transform:
-                        "translateY(-50%)",
-                    },
+                    transform:
+                      "translateY(-50%)",
+                  },
 
                   "&::before": {
                     left: "-10px",

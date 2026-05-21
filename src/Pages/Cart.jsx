@@ -1,10 +1,4 @@
-// CartDrawer.jsx
-
-import React, {
-  useEffect,
-  useState,
-} from "react";
-
+import React, { useEffect, useState } from "react";
 import {
   Drawer,
   Box,
@@ -14,201 +8,87 @@ import {
   Stack,
   Checkbox,
   TextField,
+  InputAdornment,
 } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
 
-import {
-  useDispatch,
-  useSelector,
-} from "react-redux";
 
 import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumberOutlined";
 
-import {
-  getUserDataActionInitiate,
-} from "../redux/actions/getUserAction";
 
-import {
-  putUserDataActionInitiate,
-} from "../redux/actions/updateUserAction";
+import { getUserDataActionInitiate } from "../redux/actions/getUserAction";
+import { putUserDataActionInitiate } from "../redux/actions/updateUserAction";
 
-const CartDrawer = ({
-  open,
-  onClose,
-}) => {
+const CartDrawer = ({ open, onClose }) => {
   const dispatch = useDispatch();
+  const [user, setUser] = useState(null);
 
-  /* USER */
-  const [user, setUser] =
-    useState(null);
 
   useEffect(() => {
-    const savedUser =
-      JSON.parse(
-        localStorage.getItem("user")
-      );
-
+    const savedUser = JSON.parse(localStorage.getItem("user"));
     if (savedUser) {
       setUser(savedUser);
     }
   }, []);
 
-  /* GET USERS */
-  const getUsersState =
-    useSelector(
-      (state) =>
-        state.getuserdata
-    );
 
-  const usersData =
-    getUsersState?.data || [];
+  const getUsersState = useSelector((state) => state.getuserdata);
+  const usersData = getUsersState?.data || [];
 
-  /* CURRENT USER */
-  const existingUser =
-    usersData.find(
-      (item) =>
-        item.email === user?.email
-    );
 
-  /* CART ITEMS */
-  const cartItems =
-    existingUser?.cart || [];
+  const existingUser = usersData.find((item) => item.email === user?.email);
+  const cartItems = existingUser?.cart || [];
 
   useEffect(() => {
-    dispatch(
-      getUserDataActionInitiate()
-    );
+    dispatch(getUserDataActionInitiate());
   }, [dispatch]);
 
-  /* TOTAL PRICE */
-  const totalPrice =
-    Array.isArray(cartItems)
-      ? cartItems.reduce(
-          (acc, item) =>
-            acc +
-            Number(item?.price || 0) *
-              Number(
-                item?.quantity || 1
-              ),
-          0
-        )
-      : 0;
+ 
+  const totalMRP = Array.isArray(cartItems)
+    ? cartItems.reduce((acc, item) => acc + Number(item?.mrp || 0) * Number(item?.quantity || 1), 0)
+    : 0;
 
-  /* =========================
-      INCREASE QTY
-  ========================== */
-  const handleIncreaseQty =
-    async (firebaseKey) => {
-      try {
-        const updatedCart =
-          existingUser.cart.map(
-            (item) =>
-              item.firebaseKey ===
-              firebaseKey
-                ? {
-                    ...item,
-                    quantity:
-                      item.quantity + 1,
-                  }
-                : item
-          );
+  const totalPrice = Array.isArray(cartItems)
+    ? cartItems.reduce((acc, item) => acc + Number(item?.price || 0) * Number(item?.quantity || 1), 0)
+    : 0;
 
-        const updatedUser = {
-          ...existingUser,
-          cart: updatedCart,
-        };
+  const savings = totalMRP - totalPrice;
 
-        await dispatch(
-          putUserDataActionInitiate(
-            updatedUser,
-            existingUser.id
-          )
-        );
+ 
+  const updateCartInDB = async (updatedCart) => {
+    try {
+      const updatedUser = { ...existingUser, cart: updatedCart };
+      await dispatch(putUserDataActionInitiate(updatedUser, existingUser.id));
+      dispatch(getUserDataActionInitiate());
+    } catch (error) {
+      console.error("Failed to update cart:", error);
+    }
+  };
 
-        dispatch(
-          getUserDataActionInitiate()
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const handleIncreaseQty = (firebaseKey) => {
+    const updatedCart = existingUser.cart.map((item) =>
+      item.firebaseKey === firebaseKey ? { ...item, quantity: item.quantity + 1 } : item
+    );
+    updateCartInDB(updatedCart);
+  };
 
-  /* =========================
-      DECREASE QTY
-  ========================== */
-  const handleDecreaseQty =
-    async (firebaseKey) => {
-      try {
-        const updatedCart =
-          existingUser.cart.map(
-            (item) =>
-              item.firebaseKey ===
-              firebaseKey
-                ? {
-                    ...item,
-                    quantity:
-                      item.quantity > 1
-                        ? item.quantity -
-                          1
-                        : 1,
-                  }
-                : item
-          );
+  const handleDecreaseQty = (firebaseKey) => {
+    const updatedCart = existingUser.cart.map((item) =>
+      item.firebaseKey === firebaseKey
+        ? { ...item, quantity: item.quantity > 1 ? item.quantity - 1 : 1 }
+        : item
+    );
+    updateCartInDB(updatedCart);
+  };
 
-        const updatedUser = {
-          ...existingUser,
-          cart: updatedCart,
-        };
-
-        await dispatch(
-          putUserDataActionInitiate(
-            updatedUser,
-            existingUser.id
-          )
-        );
-
-        dispatch(
-          getUserDataActionInitiate()
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
-  /* =========================
-      DELETE ITEM
-  ========================== */
-  const handleDeleteItem =
-    async (firebaseKey) => {
-      try {
-        const updatedCart =
-          existingUser.cart.filter(
-            (item) =>
-              item.firebaseKey !==
-              firebaseKey
-          );
-
-        const updatedUser = {
-          ...existingUser,
-          cart: updatedCart,
-        };
-
-        await dispatch(
-          putUserDataActionInitiate(
-            updatedUser,
-            existingUser.id
-          )
-        );
-
-        dispatch(
-          getUserDataActionInitiate()
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
+  const handleDeleteItem = (firebaseKey) => {
+    const updatedCart = existingUser.cart.filter((item) => item.firebaseKey !== firebaseKey);
+    updateCartInDB(updatedCart);
+  };
 
   return (
     <Drawer
@@ -217,437 +97,237 @@ const CartDrawer = ({
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: {
-            xs: "100%",
-            sm: "430px",
-          },
-          bgcolor: "#f5f5f5",
+          width: { xs: "100vw", sm: "420px", }, 
+          maxWidth: "100%",
+          bgcolor: "#ffffff",
+          display: "flex",
+          flexDirection: "column",
         },
       }}
     >
-      {/* HEADER */}
-      <Box
-        sx={{
-          p: 2,
-          bgcolor: "#fff",
-          display: "flex",
-          alignItems: "center",
-          justifyContent:
-            "space-between",
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize: "28px",
-            fontWeight: 700,
-          }}
-        >
-          Your Cart (
-          {cartItems?.length || 0}{" "}
-          items)
+     
+      <Box sx={{ p: 2, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #f5f5f5" }}>
+        <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 700, color: "#000" }}>
+          Your Cart ({cartItems?.length || 0} items)
         </Typography>
-
-        <IconButton onClick={onClose}>
-          <CloseIcon />
+        <IconButton onClick={onClose} size="small" sx={{ color: "#000" }}>
+          <CloseIcon fontSize="small" />
         </IconButton>
       </Box>
 
-      {/* OFFER BAR */}
-      <Box
-        sx={{
-          bgcolor: "#000",
-          color: "#fff",
-          py: 2,
-          textAlign: "center",
-          borderBottomLeftRadius:
-            "18px",
-          borderBottomRightRadius:
-            "18px",
-        }}
-      >
-        <Typography
-          sx={{
-            fontSize: "14px",
-            fontWeight: 500,
-          }}
-        >
-          Earn 5% MCash with each
-          order (1 MCash = ₹1)
+      
+      <Box sx={{ bgcolor: "#000000", color: "#fff", py: 1.2, px: 2, textAlign: "center" }}>
+        <Typography sx={{ fontSize: { xs: "10px", sm: "11px" }, fontWeight: 600, letterSpacing: "0.3px" }}>
+          Free Light Fluid SPF 50 Sunscreen on all orders! (Auto-Applied on checkout)
         </Typography>
       </Box>
 
-      {/* EMPTY CART */}
-      {!Array.isArray(cartItems) ||
-      cartItems.length === 0 ? (
-        <Box
-          sx={{
-            flex: 1,
-            display: "flex",
-            justifyContent:
-              "center",
-            alignItems: "center",
-            flexDirection: "column",
-            textAlign: "center",
-            p: 4,
-          }}
-        >
-          <Typography
-            sx={{
-              fontSize: "26px",
-              fontWeight: 700,
-              mb: 1,
-            }}
-          >
-            Your cart is empty
-          </Typography>
-
-          <Typography
-            sx={{
-              color: "#777",
-            }}
-          >
-            Add products to continue
-            shopping
-          </Typography>
+      {/* MAIN CONTENT AREA */}
+      {!Array.isArray(cartItems) || cartItems.length === 0 ? (
+        <Box sx={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center", flexDirection: "column", p: 4 }}>
+          <Typography sx={{ fontSize: "18px", fontWeight: 700, mb: 0.5 }}>Your cart is empty</Typography>
+          <Typography sx={{ color: "#777", fontSize: "13px" }}>Add products to continue shopping</Typography>
         </Box>
       ) : (
         <>
-          {/* CART ITEMS */}
-          <Box
-            sx={{
-              flex: 1,
-              overflowY: "auto",
-              p: 2,
-            }}
-          >
-            <Stack spacing={2}>
-              {cartItems.map(
-                (
-                  item,
-                  index
-                ) => (
+          {/* CART ITEMS LIST */}
+          <Box sx={{ flex: 1, overflowY: "auto", px: { xs: 1.5, sm: 2 }, py: 1.5, bgcolor: "#fafafa" }}>
+            <Stack spacing={1.5}>
+              {cartItems.map((item, index) => {
+                const discountPercentage = item.mrp && item.price ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
+                
+                return (
                   <Box
-                    key={
-                      item?.firebaseKey ||
-                      index
-                    }
+                    key={item?.firebaseKey || index}
                     sx={{
-                      bgcolor:
-                        "#fff",
-                      borderRadius:
-                        "16px",
-                      p: 2,
+                      bgcolor: "#fff",
+                      border: "1px solid #e5e5e5",
+                      borderRadius: "8px",
+                      p: { xs: 1.2, sm: 1.5 },
+                      display: "flex",
+                      gap: { xs: 1.5, sm: 2 },
+                      position: "relative",
                     }}
                   >
-                    <Box
-                      sx={{
-                        display:
-                          "flex",
-                        gap: 2,
-                      }}
-                    >
-                      {/* IMAGE */}
-                      <Box
-                        sx={{
-                          width:
-                            "90px",
-                          height:
-                            "110px",
-                          bgcolor:
-                            "#f3f3f3",
-                          borderRadius:
-                            "8px",
-                          overflow:
-                            "hidden",
-                        }}
-                      >
-                        <img
-                          src={
-                            item?.image
-                          }
-                          alt={
-                            item?.productName
-                          }
-                          style={{
-                            width:
-                              "100%",
-                            height:
-                              "100%",
-                            objectFit:
-                              "contain",
-                          }}
-                        />
-                      </Box>
+                    {/* PRODUCT IMAGE CONTAINER */}
+                    <Box sx={{ width: { xs: "65px", sm: "75px" }, height: { xs: "85px", sm: "95px" }, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                      <img
+                        src={item?.image}
+                        alt={item?.productName}
+                        style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                      />
+                    </Box>
 
-                      {/* DETAILS */}
-                      <Box
-                        sx={{
-                          flex: 1,
-                        }}
-                      >
-                        <Typography
-                          sx={{
-                            fontSize:
-                              "18px",
-                            fontWeight: 600,
-                            lineHeight:
-                              1.3,
+                    {/* PRODUCT DETAILS & ACTIONS */}
+                    <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", minWidth: 0 }}>
+                      <Box sx={{ pr: 2.5 }}>
+                        <Typography 
+                          sx={{ 
+                            fontSize: { xs: "12px", sm: "13px" }, 
+                            fontWeight: 600, 
+                            color: "#111", 
+                            lineHeight: 1.3,
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical",
+                            overflow: "hidden"
                           }}
                         >
-                          {
-                            item?.productName
-                          }
+                          {item?.productName || "Product Title"}
                         </Typography>
 
-                        {/* SIZE */}
-                        <Box
-                          sx={{
-                            mt: 1,
-                          }}
-                        >
-                          <select
-                            style={{
-                              padding:
-                                "6px 12px",
-                              borderRadius:
-                                "8px",
-                              border:
-                                "1px solid #ccc",
-                              outline:
-                                "none",
+                        {/* SIZE CHIP */}
+                        <Box sx={{ mt: 0.5 }}>
+                          <Typography 
+                            component="span"
+                            sx={{ 
+                              px: 1, 
+                              py: 0.2, 
+                              border: "1px solid #e0e0e0", 
+                              borderRadius: "4px", 
+                              fontSize: "10px", 
+                              color: "#666",
+                              bgcolor: "#fcfcfc"
                             }}
                           >
-                            <option>
-                              {
-                                item?.size
-                              }
-                            </option>
-                          </select>
+                            {item?.size || "100ml"}
+                          </Typography>
+                        </Box>
+                      </Box>
+
+                      {/* ACTIONS ROW (QUANTITY & PRICE) */}
+                      <Box 
+                        sx={{ 
+                          display: "flex", 
+                          flexDirection: { xs: "column", sm: "row" }, 
+                          alignItems: { xs: "flex-start", sm: "center" }, 
+                          justifyContent: "space-between", 
+                          gap: 1, 
+                          mt: 1 
+                        }}
+                      >
+                        {/* QUANTITY CONTROLLER */}
+                        <Box sx={{ display: "flex", alignItems: "center", border: "1px solid #e0e0e0", borderRadius: "4px", bgcolor: "#fff" }}>
+                          <IconButton size="small" onClick={() => handleDecreaseQty(item?.firebaseKey)} sx={{ p: "2px" }}>
+                            <RemoveIcon sx={{ fontSize: "14px" }} />
+                          </IconButton>
+                          <Typography sx={{ px: 1, fontSize: "12px", fontWeight: 600 }}>
+                            {item?.quantity || 1}
+                          </Typography>
+                          <IconButton size="small" onClick={() => handleIncreaseQty(item?.firebaseKey)} sx={{ p: "2px" }}>
+                            <AddIcon sx={{ fontSize: "14px" }} />
+                          </IconButton>
                         </Box>
 
-                        {/* PRICE + QTY */}
-                        <Box
-                          sx={{
-                            mt: 2,
-                            display:
-                              "flex",
-                            justifyContent:
-                              "space-between",
-                            alignItems:
-                              "center",
-                          }}
-                        >
-                          {/* PRICE */}
-                          <Box>
-                            <Typography
-                              sx={{
-                                textDecoration:
-                                  "line-through",
-                                color:
-                                  "#999",
-                                fontSize:
-                                  "14px",
-                              }}
-                            >
-                              ₹
-                              {
-                                item?.mrp
-                              }
+                        {/* PRICE LABELS */}
+                        <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.8, flexWrap: "wrap" }}>
+                          <Typography sx={{ textDecoration: "line-through", color: "#aaa", fontSize: "11px" }}>
+                            ₹{item?.mrp || item?.price}
+                          </Typography>
+                          <Typography sx={{ fontWeight: 700, fontSize: { xs: "13px", sm: "14px" }, color: "#000" }}>
+                            ₹{item?.price}
+                          </Typography>
+                          {discountPercentage > 0 && (
+                            <Typography sx={{ color: "#2e7d32", fontSize: "10px", fontWeight: 600 }}>
+                              ({discountPercentage}% OFF)
                             </Typography>
-
-                            <Typography
-                              sx={{
-                                fontWeight: 700,
-                                fontSize:
-                                  "24px",
-                              }}
-                            >
-                              ₹
-                              {
-                                item?.price
-                              }
-                            </Typography>
-
-                            <Typography
-                              sx={{
-                                color:
-                                  "green",
-                                fontSize:
-                                  "14px",
-                                fontWeight: 600,
-                              }}
-                            >
-                              (
-                              {
-                                item?.offer
-                              }
-                              % OFF)
-                            </Typography>
-                          </Box>
-
-                          {/* QUANTITY */}
-                          <Box
-                            sx={{
-                              display:
-                                "flex",
-                              alignItems:
-                                "center",
-                              gap: 1,
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                display:
-                                  "flex",
-                                alignItems:
-                                  "center",
-                                border:
-                                  "1px solid #ddd",
-                                borderRadius:
-                                  "10px",
-                                overflow:
-                                  "hidden",
-                              }}
-                            >
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  handleDecreaseQty(
-                                    item?.firebaseKey
-                                  )
-                                }
-                              >
-                                <RemoveIcon fontSize="small" />
-                              </IconButton>
-
-                              <Typography
-                                sx={{
-                                  px: 1,
-                                  fontWeight: 600,
-                                }}
-                              >
-                                {
-                                  item?.quantity
-                                }
-                              </Typography>
-
-                              <IconButton
-                                size="small"
-                                onClick={() =>
-                                  handleIncreaseQty(
-                                    item?.firebaseKey
-                                  )
-                                }
-                              >
-                                <AddIcon fontSize="small" />
-                              </IconButton>
-                            </Box>
-
-                            {/* DELETE */}
-                            <IconButton
-                              onClick={() =>
-                                handleDeleteItem(
-                                  item?.firebaseKey
-                                )
-                              }
-                            >
-                              <DeleteIcon />
-                            </IconButton>
-                          </Box>
+                          )}
                         </Box>
                       </Box>
                     </Box>
+
+                  
+                    <IconButton
+                      onClick={() => handleDeleteItem(item?.firebaseKey)}
+                      size="small"
+                      sx={{ position: "absolute", right: 6, top: 6, color: "#999", "&:hover": { color: "#d32f2f" } }}
+                    >
+                      <DeleteIcon sx={{ fontSize: "16px" }} />
+                    </IconButton>
                   </Box>
-                )
-              )}
+                );
+              })}
             </Stack>
           </Box>
 
-          {/* FOOTER */}
-          <Box
-            sx={{
-              bgcolor: "#fff",
-              p: 2,
-              borderTop:
-                "1px solid #e0e0e0",
-            }}
-          >
-            {/* COUPON */}
+          <Box sx={{ bgcolor: "#fff", p: { xs: 1.5, sm: 2 }, borderTop: "1px solid #eee" }}>
+      
             <TextField
               fullWidth
+              size="small"
               placeholder="Enter Coupon Code"
-              sx={{
-                mb: 2,
-                bgcolor: "#f8f8f8",
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <ConfirmationNumberOutlinedIcon sx={{ color: "#14b8a6", fontSize: "16px" }} />
+                  </InputAdornment>
+                ),
+                sx: {
+                  fontSize: "12px",
+                  borderRadius: "4px",
+                  "& fieldset": { borderColor: "#e0e0e0" },
+                 
+                }
               }}
+              sx={{ mb: 1.2 , display:{xs:'none',md:'block'}}}
             />
 
-            {/* TOTAL */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent:
-                  "space-between",
-                alignItems: "center",
-                mb: 2,
-              }}
-            >
-              <Typography
-                sx={{
-                  fontSize: "20px",
-                  fontWeight: 700,
-                }}
-              >
+            {/* SAVED BADGE */}
+            {savings > 0 && (
+              <Box sx={{ bgcolor: "#00bfa5", color: "#fff", py: 0.5, px: 2, borderRadius: "4px", textAlign: "center", mb: 1.5 }}>
+                <Typography sx={{ fontSize: "11px", fontWeight: 700, letterSpacing: "0.2px" }}>
+                  ₹{savings}.00 Saved so far!
+                </Typography>
+              </Box>
+            )}
+
+            {/* BILL DETAILS */}
+            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 1.5 }}>
+              <Typography sx={{ fontSize: "13px", fontWeight: 700, color: "#000" }}>
                 Estimated Total
               </Typography>
+              <Box sx={{ textAlign: "right" }}>
+                {savings > 0 && (
+                  <Typography sx={{ textDecoration: "line-through", color: "#aaa", fontSize: "12px", mr: 1 }}>
+                    ₹{totalMRP}.00
+                  </Typography>
+                )}
+                <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 800, color: "#000" }}>
+                  ₹{totalPrice}.00
+                </Typography>
+              </Box>
+            </Box>
 
-              <Typography
-                sx={{
-                  fontSize: "32px",
-                  fontWeight: 700,
-                }}
-              >
-                ₹{totalPrice}
+            {/* PRIVACY CHECK */}
+            <Box sx={{ display: "flex", alignItems: "center", mb: 1.5, ml: -1 }}>
+              <Checkbox size="small" defaultChecked sx={{ color: "#000", "&.Mui-checked": { color: "#000" } }} />
+              <Typography sx={{ fontSize: "11px", color: "#444" }}>
+                I agree to the <span style={{ textDecoration: "underline", cursor: "pointer" }}>T&C</span> & <span style={{ textDecoration: "underline", cursor: "pointer" }}>Privacy Notice</span>
               </Typography>
             </Box>
 
-            {/* TERMS */}
-            <Box
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                mb: 2,
-              }}
-            >
-              <Checkbox />
-
-              <Typography
-                sx={{
-                  fontSize: "14px",
-                }}
-              >
-                I agree to the T&C &
-                Privacy Notice
-              </Typography>
-            </Box>
-
-            {/* CHECKOUT */}
+            {/* SUBMIT BUTTON */}
             <Button
               fullWidth
+              variant="contained"
+              disableElevation
               sx={{
-                bgcolor: "#000",
+                bgcolor: "#000000",
                 color: "#fff",
-                py: 1.8,
-                borderRadius: "12px",
-                fontSize: "18px",
+                py: { xs: 1.2, sm: 1.5 },
+                borderRadius: "4px",
+                fontSize: "13px",
                 fontWeight: 700,
-
-                "&:hover": {
-                  bgcolor: "#111",
-                },
+                textTransform: "none",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                px: 2,
+                "&:hover": { bgcolor: "#1a1a1a" },
               }}
             >
-              Checkout
+              <Typography sx={{ fontSize: "13px", fontWeight: 700 }}>Checkout</Typography>
+              <Typography sx={{ fontSize: "10px", fontWeight: 400, color: "#bbb" }}>Powered by GoKwik</Typography>
             </Button>
           </Box>
         </>

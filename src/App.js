@@ -21,14 +21,14 @@ const App = () => {
 
   return (
     <>
-    
+
       <MuiNavbar1
         openCart={() =>
           setCartOpen(true)
         }
       />
 
-     
+
       <CartDrawer
         open={cartOpen}
         onClose={() =>
@@ -36,7 +36,7 @@ const App = () => {
         }
       />
 
-      
+
       <Routes>
         <Route
           path="/"

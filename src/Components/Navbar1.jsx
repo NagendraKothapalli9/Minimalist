@@ -6,23 +6,16 @@ import {
   Box,
   IconButton,
   Badge,
+  Container,
   Drawer,
-  List,
-  ListItem,
-  Divider,
 } from "@mui/material";
 
-import MenuIcon from "@mui/icons-material/Menu";
 import SearchIcon from "@mui/icons-material/Search";
 import PersonOutlineOutlinedIcon from "@mui/icons-material/PersonOutlineOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
+import MenuIcon from "@mui/icons-material/Menu";
 import CloseIcon from "@mui/icons-material/Close";
-
-import EmailIcon from "@mui/icons-material/Email";
-import FacebookIcon from "@mui/icons-material/Facebook";
-import InstagramIcon from "@mui/icons-material/Instagram";
-import YouTubeIcon from "@mui/icons-material/YouTube";
 
 import { onAuthStateChanged } from "firebase/auth";
 import { useSelector } from "react-redux";
@@ -30,87 +23,60 @@ import { auth } from "../firebase";
 import { Theme } from "../GlobalStyles";
 import NavSlider from "./NavSlider";
 import LoginModal from "./LoginModal";
-import UserProfileModal from "./UserProfile";
+
 import { useNavigate } from "react-router-dom";
+import UserProfileModal from "./UserProfile";
 
 const MuiNavbar1 = ({ openCart }) => {
-  const [mobileOpen, setMobileOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
 
   const navigate = useNavigate();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (currentUser) => {
-        if (currentUser) {
-          const userData = {
-            uid: currentUser.uid,
-            email: currentUser.email,
-            displayName:
-              currentUser.displayName || "",
-            photoURL:
-              currentUser.photoURL || "",
-          };
-
-          setUser(userData);
-        } else {
-          setUser(null);
-        }
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser({
+          uid: currentUser.uid,
+          email: currentUser.email,
+          displayName: currentUser.displayName || "",
+          photoURL: currentUser.photoURL || "",
+        });
+      } else {
+        setUser(null);
       }
-    );
+    });
 
     return () => unsubscribe();
   }, []);
 
-  const productState = useSelector(
-    (state) => state.getproductdata
+  const productState = useSelector((state) => state.getproductdata);
+  const products = productState?.data || [];
+
+  const shopProducts = products.filter(
+    (p) => p?.categories?.toLowerCase() === "shop"
   );
 
-  const products =
-    productState?.data || [];
+  const bestSellersProducts = products.filter(
+    (p) => p?.categories === "Best Sellers"
+  );
 
-  const shopProducts =
-    products.filter(
-      (p) =>
-        p?.categories?.toLowerCase() ===
-        "shop"
-    );
+  const babyCareProducts = products.filter(
+    (p) => p?.categories === "Baby Care"
+  );
 
-  const bestSellersProducts =
-    products.filter(
-      (p) =>
-        p?.categories ===
-        "Best Sellers"
-    );
-
-  const babyCareProducts =
-    products.filter(
-      (p) =>
-        p?.categories ===
-        "Baby Care"
-    );
+  const hairProducts = products.filter(
+    (p) => p?.categories === "Hair Care"
+  );
 
   const dropdownData = {
-    Shop: shopProducts.slice(
-      0,
-      8
-    ),
-
-    "Best Sellers":
-      bestSellersProducts.slice(
-        0,
-        8
-      ),
-
-    "Baby Care":
-      babyCareProducts.slice(
-        0,
-        8
-      ),
+    Shop: shopProducts.slice(0, 8),
+    "Best Sellers": bestSellersProducts.slice(0, 8),
+    "Baby Care": babyCareProducts.slice(0, 8),
+    "Hair Care": hairProducts.slice(0, 8),
   };
 
   const skinBodyCareColumns = {
@@ -123,7 +89,6 @@ const MuiNavbar1 = ({ openCart }) => {
       "Dullness",
       "Aging",
     ],
-
     "Shop by Ingredients": [
       "Vitamin C",
       "Niacinamide",
@@ -131,20 +96,8 @@ const MuiNavbar1 = ({ openCart }) => {
       "Retinol",
       "Salicylic Acid",
     ],
-
-    "Skin Care": [
-      "Cleanse",
-      "Tone",
-      "Treat",
-      "Moisturize",
-      "SPF",
-    ],
-
-    "Body Care": [
-      "Body Wash",
-      "Lotion",
-      "Roll On",
-    ],
+    "Skin Care": ["Cleanse", "Tone", "Treat", "Moisturize", "SPF"],
+    "Body Care": ["Body Wash", "Lotion", "Roll On"],
   };
 
   const hairCareColumns = {
@@ -155,44 +108,23 @@ const MuiNavbar1 = ({ openCart }) => {
       "Frizzy Hair",
       "Oily Scalp",
     ],
-
     "Shop by Ingredients": [
       "Capixyl",
       "Peptide",
       "Carnitine",
       "Maleic Acid",
     ],
-
-    Hair: [
-      "Treat",
-      "Shampoo",
-      "Conditioner",
-      "Mask",
-    ],
+    Hair: ["Treat", "Shampoo", "Conditioner", "Mask"],
   };
 
-  const getUsersState =
-    useSelector(
-      (state) =>
-        state.getuserdata
-    );
+  const getUsersState = useSelector((state) => state.getuserdata);
+  const usersData = getUsersState?.data || [];
 
-  const usersData =
-    getUsersState?.data || [];
-
-  const existingUser =
-    usersData.find(
-      (item) =>
-        item.email === user?.email
-    );
+  const existingUser = usersData.find((item) => item.email === user?.email);
 
   const cartCount =
     existingUser?.cart?.reduce(
-      (acc, item) =>
-        acc +
-        Number(
-          item?.quantity || 1
-        ),
+      (acc, item) => acc + Number(item?.quantity || 1),
       0
     ) || 0;
 
@@ -206,12 +138,19 @@ const MuiNavbar1 = ({ openCart }) => {
     "Track Order",
   ];
 
+  const dropdownMenus = [
+    "Shop",
+    "Best Sellers",
+    "Skin & Body Care",
+    "Baby Care",
+    "Hair Care",
+  ];
+
   const navItemStyles = {
     position: "relative",
     display: "inline-block",
     cursor: "pointer",
-
-    "&::after": {
+    "::after": {
       content: '""',
       position: "absolute",
       left: 0,
@@ -221,17 +160,19 @@ const MuiNavbar1 = ({ openCart }) => {
       backgroundColor: "black",
       transform: "scaleX(0)",
       transformOrigin: "left",
-      transition:
-        "transform .3s",
+      transition: "transform .3s",
     },
-
-    "&:hover::after": {
-      transform:
-        "scaleX(1)",
+    ":hover::after": {
+      transform: "scaleX(1)",
     },
-
     ...Theme.font16SemiBold,
   };
+
+  const skinCareImage =
+    "https://res.cloudinary.com/dam89m7fe/image/upload/v1779339131/skin_menu_byfjnv.avif";
+
+  const hairCareImage =
+    "https://res.cloudinary.com/dam89m7fe/image/upload/v1779339180/haircare_bhko1f.avif";
 
   return (
     <Box>
@@ -240,253 +181,325 @@ const MuiNavbar1 = ({ openCart }) => {
       <AppBar
         position="relative"
         sx={{
-          backgroundColor:
-            "#fff",
+          background: "#fff",
           color: "#000",
           boxShadow: "none",
-          borderBottom:
-            "1px solid #eee",
-          px: { xs: 0, md: 4 },
+          borderBottom: "1px solid #eee",
         }}
       >
         <Toolbar
           sx={{
-            display: "flex",
-            justifyContent:
-              "space-between",
+            px: { xs: 2, md: 4 },
+            justifyContent: "space-between",
           }}
         >
+          {/* Left */}
           <Box
-            component="img"
-            src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898230/nav_logo_l4jgwz.webp"
-            onClick={() =>
-              navigate("/")
-            }
             sx={{
-              cursor: "pointer",
-              height: {
-                xs: 20,
-                md: 25,
-              },
+              display: "flex",
+              alignItems: "center",
+              gap: 2,
             }}
-          />
+          >
+            {/* Mobile toggler */}
+            <IconButton
+              sx={{
+                display: { xs: "flex", md: "none" },
+              }}
+              onClick={() => setDrawerOpen(true)}
+            >
+              <MenuIcon />
+            </IconButton>
 
+            {/* Logo */}
+            <Box
+              component="img"
+              src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898230/nav_logo_l4jgwz.webp"
+              sx={{
+                height: { xs: 20, md: 25 },
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/")}
+            />
+          </Box>
+
+          {/* Desktop Menu */}
           <Box
             sx={{
-              display: {
-                xs: "none",
-                md: "flex",
-              },
+              display: { xs: "none", md: "flex" },
               gap: 5,
             }}
           >
-            {menuItems.map(
-              (item) => (
-                <Typography
-                  key={item}
-                  sx={
-                    navItemStyles
+            {menuItems.map((item) => (
+              <Typography
+                key={item}
+                sx={navItemStyles}
+                onMouseEnter={() => {
+                  if (dropdownMenus.includes(item)) {
+                    setActiveMenu(item);
+                  } else {
+                    setActiveMenu(null);
                   }
-                  onMouseEnter={() =>
-                    setActiveMenu(
-                      item
-                    )
+                }}
+                onClick={() => {
+                  if (item === "Track Order") {
+                    navigate("/track-order");
                   }
-                >
-                  {item}
-                </Typography>
-              )
-            )}
+                  if (item === "AI Assistants") {
+                    navigate("/ai-assistants");
+                  }
+                }}
+              >
+                {item}
+              </Typography>
+            ))}
           </Box>
 
+          {/* Right Icons */}
           <Box display="flex">
-            <IconButton>
-              <StarBorderIcon />
-            </IconButton>
-
-            <IconButton>
-              <SearchIcon />
+            <IconButton
+              sx={{
+                display: { xs: "none", sm: "none", md: "inline-flex" },
+              }}
+            >
+              <StarBorderIcon sx={{ color: "black", fontSize: "28px" }} />
             </IconButton>
 
             <IconButton
-              onClick={() =>
-                user
-                  ? setProfileOpen(
-                      true
-                    )
-                  : setLoginOpen(
-                      true
-                    )
-              }
+              sx={{
+                display: { xs: "none", sm: "none", md: "inline-flex" },
+              }}
             >
-              <PersonOutlineOutlinedIcon />
+              <SearchIcon sx={{ color: "black", fontSize: "28px" }} />
             </IconButton>
 
             <IconButton
-              onClick={
-                openCart
-              }
+              onClick={() => (user ? setProfileOpen(true) : setLoginOpen(true))}
             >
+              <PersonOutlineOutlinedIcon
+                sx={{ color: "black", fontSize: "28px" }}
+              />
+            </IconButton>
+
+            <IconButton onClick={openCart}>
               <Badge
-                badgeContent={
-                  cartCount
-                }
+                badgeContent={cartCount}
+                sx={{
+                  "& .MuiBadge-badge": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    borderRadius: "50%",
+                    minWidth: "18px",
+                    height: "18px",
+                    fontSize: "11px",
+                  },
+                }}
               >
-                <ShoppingCartOutlinedIcon />
+                <ShoppingCartOutlinedIcon
+                  sx={{ color: "black", fontSize: "25px" }}
+                />
               </Badge>
             </IconButton>
           </Box>
         </Toolbar>
 
+        {/* Mega Dropdown */}
         <Box
-          onMouseLeave={() =>
-            setActiveMenu(null)
-          }
+          onMouseLeave={() => setActiveMenu(null)}
           sx={{
+            display: { xs: "none", md: "block" },
             position: "absolute",
             top: "100%",
             width: "100%",
-            background:
-              "#fff",
+            background: "#fff",
             zIndex: 999,
             overflow: "hidden",
-            minHeight:
-              activeMenu
-                ? "450px"
-                : 0,
-            transition:
-              ".3s",
+            height: dropdownMenus.includes(activeMenu) ? "450px" : 0,
+            transition: "all .4s ease",
           }}
         >
-          <Box
-            sx={{
-              p: 5,
-              display: "flex",
-              gap: 6,
-              flexWrap: "wrap",
-            }}
-          >
-            {(activeMenu ===
-              "Hair Care" ||
-              activeMenu ===
-                "Skin & Body Care") && (
-              <>
-                {Object.entries(
-                  activeMenu ===
-                    "Hair Care"
-                    ? hairCareColumns
-                    : skinBodyCareColumns
-                ).map(
-                  (
-                    [
-                      title,
-                      items,
-                    ],
-                    i
-                  ) => (
-                    <Box
-                      key={i}
-                    >
+          <Container maxWidth="xl">
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+                py: 5,
+                gap: 5,
+              }}
+            >
+              {/* LEFT SECTION */}
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 5,
+                  flexWrap: "wrap",
+                  flex: 1,
+                }}
+              >
+                {(activeMenu === "Hair Care" ||
+                  activeMenu === "Skin & Body Care") &&
+                  Object.entries(
+                    activeMenu === "Hair Care"
+                      ? hairCareColumns
+                      : skinBodyCareColumns
+                  ).map(([title, items]) => (
+                    <Box key={title}>
                       <Typography
                         sx={{
                           ...Theme.font16SemiBold,
-                          mb: 2,
+                          mb: 1,
+                          ml: 12,
                         }}
                       >
                         {title}
                       </Typography>
 
-                      {items.map(
-                        (
-                          item,
-                          idx
-                        ) => (
-                          <Typography
-                            key={
-                              idx
-                            }
-                            sx={{
-                              mb: 1,
-                            }}
-                          >
-                            {item}
-                          </Typography>
-                        )
-                      )}
+                      {items.map((item, i) => (
+                        <Typography
+                          key={i}
+                          sx={{
+                            mb: 1,
+                            ...Theme.font15Regular,
+                            ml: 12,
+                          }}
+                        >
+                          {item}
+                        </Typography>
+                      ))}
                     </Box>
-                  )
-                )}
-              </>
-            )}
+                  ))}
 
-            {dropdownData[
-              activeMenu
-            ]?.map(
-              (
-                product
-              ) => (
+                {dropdownData[activeMenu]?.map((product) => (
+                  <Box
+                    key={product.id}
+                    sx={{
+                      width: 180,
+                    }}
+                  >
+                    <Box
+                      component="img"
+                      src={product.img || product.img1}
+                      sx={{
+                        width: "100%",
+                        height: 240,
+                        objectFit: "cover",
+                      }}
+                    />
+
+                    <Typography
+                      sx={{
+                        mt: 2,
+                        ...Theme.font12Regular,
+                      }}
+                    >
+                      {product.Price}
+                    </Typography>
+
+                    <Typography
+                      sx={{
+                        mt: 1,
+                        ...Theme.font16SemiBold,
+                      }}
+                    >
+                      {product.Name}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+
+              {/* Right image */}
+              {(activeMenu === "Skin & Body Care" ||
+                activeMenu === "Hair Care") && (
                 <Box
-                  key={
-                    product.id
-                  }
                   sx={{
-                    width: 180,
+                    width: 280,
                   }}
                 >
                   <Box
                     component="img"
                     src={
-                      product.img ||
-                      product.img1
+                      activeMenu === "Skin & Body Care"
+                        ? skinCareImage
+                        : hairCareImage
                     }
                     sx={{
-                      width:
-                        "100%",
-                      height:
-                        240,
-                      objectFit:
-                        "cover",
+                      width: "100%",
+                      height: 320,
+                      objectFit: "cover",
+                      borderRadius: 2,
                     }}
                   />
-
-                  <Typography
-                    mt={1}
-                    sx={
-                      Theme.font16SemiBold
-                    }
-                  >
-                    {
-                      product.Name
-                    }
-                  </Typography>
-
-                  <Typography>
-                    ₹
-                    {
-                      product.Price
-                    }
-                  </Typography>
                 </Box>
-              )
-            )}
-          </Box>
+              )}
+            </Box>
+          </Container>
         </Box>
+
+        {/* Mobile drawer */}
+        <Drawer
+          anchor="left"
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+        >
+          <Box
+            sx={{
+              width: 280,
+              p: 3,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                mb: 4,
+              }}
+            >
+              <Typography sx={Theme.font16SemiBold}>Menu</Typography>
+
+              <IconButton onClick={() => setDrawerOpen(false)}>
+                <CloseIcon />
+              </IconButton>
+            </Box>
+
+            {menuItems.map((item) => (
+              <Typography
+                key={item}
+                sx={{
+                  py: 2,
+                  cursor: "pointer",
+                  borderBottom: "1px solid #eee",
+                  ...Theme.font16SemiBold,
+                }}
+                onClick={() => {
+                  setDrawerOpen(false);
+
+                  if (item === "Track Order") {
+                    navigate("/track-order");
+                  }
+                  if (item === "AI Assistants") {
+                    navigate("/ai-assistants");
+                  }
+                }}
+              >
+                {item}
+              </Typography>
+            ))}
+          </Box>
+        </Drawer>
       </AppBar>
 
       <LoginModal
         open={loginOpen}
-        onClose={() =>
-          setLoginOpen(false)
-        }
+        onClose={() => setLoginOpen(false)}
         setUser={setUser}
       />
 
       <UserProfileModal
         open={profileOpen}
-        onClose={() =>
-          setProfileOpen(false)
-        }
+        onClose={() => setProfileOpen(false)}
         user={user}
+        setUser={setUser}
       />
     </Box>
   );
