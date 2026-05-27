@@ -28,7 +28,7 @@ const LightBox = ({ items }) => {
     if (images.length > 0) {
       setSelectedImage(images[0]);
     }
-  }, [items]);
+  },[items,images]);
 
   return (
     <Box sx={{ width: "100%" }}>

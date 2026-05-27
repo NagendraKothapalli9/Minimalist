@@ -23,9 +23,6 @@ import ConfirmationNumberOutlinedIcon from "@mui/icons-material/ConfirmationNumb
 import { getUserDataActionInitiate } from "../redux/actions/getUserAction";
 import { putUserDataActionInitiate } from "../redux/actions/updateUserAction";
 
-
-
-
 const CartDrawer = ({ open, onClose }) => {
   const dispatch = useDispatch();
   const [user, setUser] = useState(null);
@@ -37,14 +34,6 @@ const CartDrawer = ({ open, onClose }) => {
       setUser(savedUser);
     }
   }, []);
-
-  useEffect(() => {
-  const script = document.createElement("script");
-  script.src = "https://sdk.phonepe.com/sdk/js/v1/phonepe-checkout.js";
-  script.async = true;
-  document.body.appendChild(script);
-  return () => document.body.removeChild(script);
-}, []);
 
 
   const getUsersState = useSelector((state) => state.getuserdata);
@@ -58,7 +47,7 @@ const CartDrawer = ({ open, onClose }) => {
     dispatch(getUserDataActionInitiate());
   }, [dispatch]);
 
-
+ 
   const totalMRP = Array.isArray(cartItems)
     ? cartItems.reduce((acc, item) => acc + Number(item?.mrp || 0) * Number(item?.quantity || 1), 0)
     : 0;
@@ -69,7 +58,7 @@ const CartDrawer = ({ open, onClose }) => {
 
   const savings = totalMRP - totalPrice;
 
-
+ 
   const updateCartInDB = async (updatedCart) => {
     try {
       const updatedUser = { ...existingUser, cart: updatedCart };
@@ -101,66 +90,6 @@ const CartDrawer = ({ open, onClose }) => {
     updateCartInDB(updatedCart);
   };
 
-  
-
-  const client_id = process.env.REACT_APP_CLIENT_ID;
-  const client_secret = process.env.REACT_APP_CLIENT_SECRET;
-  const handlePayment = () => {
-  if (window.PhonePeCheckout) {
-    const phonepe = new window.PhonePeCheckout({
-       merchantOrderId: `ORDER_${Date.now()}`,
-    merchantUserId: `USER_${Date.now()}`,
-    amount: totalPrice * 100,
-    expireAfter: 1200,
-    metaInfo: {
-      udf1: "info-1",
-    },
-    paymentFlow: {
-      type: "PG_CHECKOUT",
-      message: "Payment message",
-      merchantUrls: {
-        redirectUrl: "http://localhost:3000/payment-success",
-      },
-    },
-    });
-
-    phonepe.init({
-      body: requestBody, // your existing JSON.stringify body
-      // Ensure you handle the environment correctly:
-      environment: "SANDBOX", 
-    }).then((res) => {
-      console.log("Payment initiated:", res);
-    }).catch((err) => {
-      console.error("Payment Error:", err);
-    });
-  } else {
-    console.error("PhonePe SDK not loaded yet.");
-  }
-};
-
-  const requestBody = JSON.stringify({
-    merchantOrderId: `ORDER_${Date.now()}`,
-    merchantUserId: `USER_${Date.now()}`,
-    amount: totalPrice * 100,
-    expireAfter: 1200,
-    metaInfo: {
-      udf1: "info-1",
-    },
-    paymentFlow: {
-      type: "PG_CHECKOUT",
-      message: "Payment message",
-      merchantUrls: {
-        redirectUrl: "http://localhost:3000/payment-success",
-      },
-    },
-  });
-
- 
-  console.log({
-    requestBody,
-    client_id,
-    client_secret,
-  });
   return (
     <Drawer
       anchor="right"
@@ -168,7 +97,7 @@ const CartDrawer = ({ open, onClose }) => {
       onClose={onClose}
       PaperProps={{
         sx: {
-          width: { xs: "100vw", sm: "420px", },
+          width: { xs: "100vw", sm: "420px", }, 
           maxWidth: "100%",
           bgcolor: "#ffffff",
           display: "flex",
@@ -176,7 +105,7 @@ const CartDrawer = ({ open, onClose }) => {
         },
       }}
     >
-
+     
       <Box sx={{ p: 2, display: "flex", alignItems: "center", justifyContent: "space-between", borderBottom: "1px solid #f5f5f5" }}>
         <Typography sx={{ fontSize: { xs: "16px", sm: "18px" }, fontWeight: 700, color: "#000" }}>
           Your Cart ({cartItems?.length || 0} items)
@@ -186,7 +115,7 @@ const CartDrawer = ({ open, onClose }) => {
         </IconButton>
       </Box>
 
-
+      
       <Box sx={{ bgcolor: "#000000", color: "#fff", py: 1.2, px: 2, textAlign: "center" }}>
         <Typography sx={{ fontSize: { xs: "10px", sm: "11px" }, fontWeight: 600, letterSpacing: "0.3px" }}>
           Free Light Fluid SPF 50 Sunscreen on all orders! (Auto-Applied on checkout)
@@ -206,7 +135,7 @@ const CartDrawer = ({ open, onClose }) => {
             <Stack spacing={1.5}>
               {cartItems.map((item, index) => {
                 const discountPercentage = item.mrp && item.price ? Math.round(((item.mrp - item.price) / item.mrp) * 100) : 0;
-
+                
                 return (
                   <Box
                     key={item?.firebaseKey || index}
@@ -232,11 +161,11 @@ const CartDrawer = ({ open, onClose }) => {
                     {/* PRODUCT DETAILS & ACTIONS */}
                     <Box sx={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", minWidth: 0 }}>
                       <Box sx={{ pr: 2.5 }}>
-                        <Typography
-                          sx={{
-                            fontSize: { xs: "12px", sm: "13px" },
-                            fontWeight: 600,
-                            color: "#111",
+                        <Typography 
+                          sx={{ 
+                            fontSize: { xs: "12px", sm: "13px" }, 
+                            fontWeight: 600, 
+                            color: "#111", 
                             lineHeight: 1.3,
                             display: "-webkit-box",
                             WebkitLineClamp: 2,
@@ -249,14 +178,14 @@ const CartDrawer = ({ open, onClose }) => {
 
                         {/* SIZE CHIP */}
                         <Box sx={{ mt: 0.5 }}>
-                          <Typography
+                          <Typography 
                             component="span"
-                            sx={{
-                              px: 1,
-                              py: 0.2,
-                              border: "1px solid #e0e0e0",
-                              borderRadius: "4px",
-                              fontSize: "10px",
+                            sx={{ 
+                              px: 1, 
+                              py: 0.2, 
+                              border: "1px solid #e0e0e0", 
+                              borderRadius: "4px", 
+                              fontSize: "10px", 
                               color: "#666",
                               bgcolor: "#fcfcfc"
                             }}
@@ -267,14 +196,14 @@ const CartDrawer = ({ open, onClose }) => {
                       </Box>
 
                       {/* ACTIONS ROW (QUANTITY & PRICE) */}
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: { xs: "column", sm: "row" },
-                          alignItems: { xs: "flex-start", sm: "center" },
-                          justifyContent: "space-between",
-                          gap: 1,
-                          mt: 1
+                      <Box 
+                        sx={{ 
+                          display: "flex", 
+                          flexDirection: { xs: "column", sm: "row" }, 
+                          alignItems: { xs: "flex-start", sm: "center" }, 
+                          justifyContent: "space-between", 
+                          gap: 1, 
+                          mt: 1 
                         }}
                       >
                         {/* QUANTITY CONTROLLER */}
@@ -307,7 +236,7 @@ const CartDrawer = ({ open, onClose }) => {
                       </Box>
                     </Box>
 
-
+                  
                     <IconButton
                       onClick={() => handleDeleteItem(item?.firebaseKey)}
                       size="small"
@@ -322,7 +251,7 @@ const CartDrawer = ({ open, onClose }) => {
           </Box>
 
           <Box sx={{ bgcolor: "#fff", p: { xs: 1.5, sm: 2 }, borderTop: "1px solid #eee" }}>
-
+      
             <TextField
               fullWidth
               size="small"
@@ -337,10 +266,10 @@ const CartDrawer = ({ open, onClose }) => {
                   fontSize: "12px",
                   borderRadius: "4px",
                   "& fieldset": { borderColor: "#e0e0e0" },
-
+                 
                 }
               }}
-              sx={{ mb: 1.2, display: { xs: 'none', md: 'block' } }}
+              sx={{ mb: 1.2 , display:{xs:'none',md:'block'}}}
             />
 
             {/* SAVED BADGE */}
@@ -377,7 +306,6 @@ const CartDrawer = ({ open, onClose }) => {
               </Typography>
             </Box>
 
-           
             {/* SUBMIT BUTTON */}
             <Button
               fullWidth
@@ -397,7 +325,6 @@ const CartDrawer = ({ open, onClose }) => {
                 px: 2,
                 "&:hover": { bgcolor: "#1a1a1a" },
               }}
-            onClick={handlePayment}
             >
               <Typography sx={{ fontSize: "13px", fontWeight: 700 }}>Checkout</Typography>
               <Typography sx={{ fontSize: "10px", fontWeight: 400, color: "#bbb" }}>Powered by GoKwik</Typography>
