@@ -322,7 +322,7 @@ const filteredProducts = searchQuery
           </Box>
         </Toolbar>
             {searchOpen && (
-                   <Box sx={{ p: 3, bgcolor: "#fff", borderBottom: "1px solid #eee", position: "absolute", width: "100%", zIndex: 1000 }}>
+                   <Box sx={{ p: 3, bgcolor: "#fff", borderBottom: "1px solid #eee", position: "absolute", width: "80%", zIndex: 1000 }}>
                      <Container maxWidth="md">
                        <TextField 
                          fullWidth 
