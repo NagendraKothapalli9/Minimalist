@@ -32,7 +32,7 @@ const ProductAccordions = () => {
 
     return (
         <Box sx={{ mt: 4 }}>
-            {/* Section 1: What Makes It Potent? */}
+          
             <Accordion 
                 expanded={expanded === 'panel1'} 
                 onChange={handleChange('panel1')}
@@ -60,7 +60,7 @@ const ProductAccordions = () => {
                 </AccordionDetails>
             </Accordion>
 
-            {/* Section 2: Ideal For */}
+           
             <Accordion 
                 expanded={expanded === 'panel2'} 
                 onChange={handleChange('panel2')}
@@ -81,7 +81,7 @@ const ProductAccordions = () => {
                 </AccordionDetails>
             </Accordion>
 
-            {/* Section 3: How to Use */}
+           
             <Accordion 
                 expanded={expanded === 'panel3'} 
                 onChange={handleChange('panel3')}

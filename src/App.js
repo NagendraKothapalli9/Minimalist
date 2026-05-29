@@ -14,6 +14,7 @@ import CartDrawer from "./Pages/Cart";
 import Home from "./Pages/Home";
 
 import ProductDetails from "./Pages/ProductDetails";
+import SuccessPage from "./Components/SuccessPage";
 
 const App = () => {
   const [cartOpen, setCartOpen] =
@@ -49,6 +50,11 @@ const App = () => {
             <ProductDetails />
           }
         />
+
+        <Route path="/success"
+         element={
+         <SuccessPage />} 
+         />
       </Routes>
     </>
   );

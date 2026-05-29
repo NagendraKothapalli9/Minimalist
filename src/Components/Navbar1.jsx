@@ -8,6 +8,8 @@ import {
   Badge,
   Container,
   Drawer,
+  TextField,
+  InputAdornment,
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -33,6 +35,8 @@ const MuiNavbar1 = ({ openCart }) => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
+
+  
 
   const navigate = useNavigate();
 
@@ -71,6 +75,20 @@ const MuiNavbar1 = ({ openCart }) => {
   const hairProducts = products.filter(
     (p) => p?.categories === "Hair Care"
   );
+  
+ const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+const getproductsdata = useSelector((state) => state.getproductdata);
+const d = getproductsdata?.data || [];
+
+
+const filteredProducts = searchQuery
+  ? d.filter((p) => 
+      p?.categories === "Our Best Sellers" && 
+      p?.Name?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  : [];
 
   const dropdownData = {
     Shop: shopProducts.slice(0, 8),
@@ -269,6 +287,7 @@ const MuiNavbar1 = ({ openCart }) => {
               sx={{
                 display: { xs: "none", sm: "none", md: "inline-flex" },
               }}
+              onClick={() => setSearchOpen(!searchOpen)}
             >
               <SearchIcon sx={{ color: "black", fontSize: "28px" }} />
             </IconButton>
@@ -302,8 +321,33 @@ const MuiNavbar1 = ({ openCart }) => {
             </IconButton>
           </Box>
         </Toolbar>
-
-        {/* Mega Dropdown */}
+            {searchOpen && (
+                   <Box sx={{ p: 3, bgcolor: "#fff", borderBottom: "1px solid #eee", position: "absolute", width: "100%", zIndex: 1000 }}>
+                     <Container maxWidth="md">
+                       <TextField 
+                         fullWidth 
+                         placeholder="Search products..." 
+                         value={searchQuery} 
+                         onChange={(e) => setSearchQuery(e.target.value)} 
+                         autoFocus
+                         InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon /></InputAdornment> }} 
+                       />
+                       {searchQuery && (
+                         <Box sx={{ mt: 2, maxHeight: "300px", overflowY: "auto" }}>
+                           {filteredProducts.map((p) => (
+                             <Box key={p.id} sx={{ display: "flex", p: 2, cursor: "pointer", borderBottom: "1px solid #f5f5f5", "&:hover": { bgcolor: "#f9f9f9" } }} onClick={() => { navigate(`/product/${p.id}`); setSearchOpen(false); }}>
+                               <img src={p.img || p.img1} alt={p.Name} style={{ width: 60, height: 60, objectFit: "cover" }} />
+                               <Typography sx={{ ml: 3, alignSelf: "center", ...Theme.font16SemiBold }}>{p.Name}</Typography>
+                             </Box>
+                           ))}
+                           {filteredProducts.length === 0 && <Typography sx={{ p: 2, color: 'gray' }}>No products found.</Typography>}
+                         </Box>
+                       )}
+                     </Container>
+                   </Box>
+                 )}
+         
+       
         <Box
           onMouseLeave={() => setActiveMenu(null)}
           sx={{
@@ -408,7 +452,7 @@ const MuiNavbar1 = ({ openCart }) => {
                 ))}
               </Box>
 
-              {/* Right image */}
+             
               {(activeMenu === "Skin & Body Care" ||
                 activeMenu === "Hair Care") && (
                 <Box
@@ -436,7 +480,7 @@ const MuiNavbar1 = ({ openCart }) => {
           </Container>
         </Box>
 
-        {/* Mobile drawer */}
+       
         <Drawer
           anchor="left"
           open={drawerOpen}

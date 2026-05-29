@@ -31,39 +31,39 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
 
   const [activeTab, setActiveTab] = useState("profile");
 
-  /* RESPONSIVE EDIT STATES */
+  
   const [editProfile, setEditProfile] = useState(false);
   const [editAddress, setEditAddress] = useState(false);
 
-  /* GET USERS */
+ 
   const getUsersState = useSelector(
     (state) => state?.getuserdata || { data: [] }
   );
 
   const data = getUsersState?.data || [];
 
-  /* FIND CURRENT USER */
+  
   const existingUser = data.find((item) => item.email === user?.email);
 
-  /* PROFILE STATES */
+ 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
 
-  /* ADDRESS STATES */
+  
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [stateName, setStateName] = useState("");
   const [pincode, setPincode] = useState("");
 
-  /* LOAD USER */
+ 
   useEffect(() => {
     if (open) {
       dispatch(getUserDataActionInitiate());
     }
   }, [dispatch, open]);
 
-  /* SET USER DATA */
+  
   useEffect(() => {
     if (existingUser) {
       setFirstName(existingUser.firstName || "");
@@ -78,7 +78,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
 
   if (!open) return null;
 
-  /* CLEAR PROFILE LOCAL STATES & RESET */
+  
   const handleLogOutCleanup = () => {
     setFirstName("");
     setLastName("");
@@ -96,17 +96,17 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
     onClose();
   };
 
-  /* SAVE PROFILE + ADDRESS */
+  
   const handleSaveProfile = async () => {
     try {
       const fullName = `${firstName} ${lastName}`;
 
-      /* UPDATE FIREBASE PROFILE */
+      
       await updateProfile(auth.currentUser, {
         displayName: fullName,
       });
 
-      /* FORM DATA */
+      
       const formData = {
         firstName,
         lastName,
@@ -120,7 +120,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
         orders: existingUser?.orders || [],
       };
 
-      /* UPDATE / CREATE USER */
+      
       if (existingUser?.id) {
         await dispatch(
           putUserDataActionInitiate(formData, existingUser.id)
@@ -129,7 +129,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
         await dispatch(postUserDataActionInitiate(formData));
       }
 
-      /* UPDATE LOCAL USER */
+      
       setUser({
         ...user,
         displayName: fullName,
@@ -181,7 +181,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
           position: "relative",
         }}
       >
-        {/* CLOSE */}
+        
         <IconButton
           onClick={onClose}
           sx={{
@@ -195,7 +195,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
           <CloseIcon />
         </IconButton>
 
-        {/* SIDEBAR */}
+        
         <Box
           sx={{
             width: {
@@ -217,9 +217,9 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
             pt: { md: 12 },
           }}
         >
-          {/* TOP */}
+          
           <Box>
-            {/* USER CARD */}
+           
             <Box
               sx={{
                 display: "flex",
@@ -275,7 +275,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
               </Box>
             </Box>
 
-            {/* MENU */}
+           
             <Box
               sx={{
                 display: "flex",
@@ -370,7 +370,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
             </Box>
           </Box>
 
-          {/* LOGOUT */}
+        
           <Button
             onClick={async () => {
               try {
@@ -393,7 +393,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
           </Button>
         </Box>
 
-        {/* CONTENT */}
+      
         <Box
           sx={{
             flex: 1,
@@ -404,7 +404,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
             overflowY: "auto",
           }}
         >
-          {/* PROFILE */}
+         
           {activeTab === "profile" && (
             <Box>
               {/* HEADER */}
@@ -587,7 +587,7 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
             </Box>
           )}
 
-          {/* ORDERS */}
+         
           {activeTab === "orders" && (
             <Box>
               <Typography
@@ -656,10 +656,10 @@ const UserProfileModal = ({ open, onClose, user, setUser }) => {
             </Box>
           )}
 
-          {/* ADDRESS */}
+        
           {activeTab === "address" && (
             <Box>
-              {/* HEADER */}
+              
               <Box
                 sx={{
                   display: "flex",

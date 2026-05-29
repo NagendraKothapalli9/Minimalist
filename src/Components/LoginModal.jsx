@@ -1,5 +1,3 @@
-// LoginModal.jsx
-
 import React, { useState } from "react";
 import {
   Box,
@@ -30,7 +28,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
 
   if (!open) return null;
 
-  /* SAVE USER */
+  
   const saveUserData = (firebaseUser) => {
     const userData = {
       uid: firebaseUser.uid,
@@ -43,7 +41,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
     setUser(userData);
   };
 
-  // GOOGLE LOGIN
+  
   const googleLogin = async () => {
     try {
       const provider = new GoogleAuthProvider();
@@ -62,7 +60,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
     }
   };
 
-  // EMAIL LOGIN
+  
   const emailLogin = async () => {
     try {
       if (!email || !password) {
@@ -84,7 +82,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
     }
   };
 
-  // EMAIL SIGNUP
+ 
   const emailSignup = async () => {
     try {
       if (!email || !password) {
@@ -102,7 +100,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
 
       setTimeout(() => {
         setSuccessMessage("");
-        onClose(); // Closes the Login modal safely
+        onClose(); 
       }, 2000);
     } catch (error) {
       console.log(error);
@@ -215,7 +213,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
             </Box>
           ) : (
             <>
-              {/* LOGO */}
+              
               <Box
                 component="img"
                 src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898230/nav_logo_l4jgwz.webp"
@@ -234,7 +232,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
                   : "Sign in to continue shopping"}
               </Typography>
 
-              {/* EMAIL */}
+              
               <TextField
                 fullWidth
                 label="Email"
@@ -244,7 +242,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
                 onChange={(e) => setEmail(e.target.value)}
               />
 
-              {/* PASSWORD */}
+             
               <TextField
                 fullWidth
                 label="Password"
@@ -255,7 +253,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
                 onChange={(e) => setPassword(e.target.value)}
               />
 
-              {/* LOGIN BUTTON */}
+              
               <Button
                 fullWidth
                 variant="contained"
@@ -275,7 +273,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
                 {isSignup ? "Create Account" : "Login"}
               </Button>
 
-              {/* TOGGLE */}
+              
               <Typography
                 sx={{
                   mt: 2,
@@ -293,7 +291,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
 
               <Divider sx={{ my: 4 }}>OR</Divider>
 
-              {/* GOOGLE LOGIN */}
+              
               <Button
                 fullWidth
                 startIcon={<GoogleIcon />}
@@ -314,7 +312,7 @@ const LoginModal = ({ open, onClose, setUser }) => {
                 Continue with Google
               </Button>
 
-              {/* TERMS */}
+             
               <Typography
                 sx={{
                   textAlign: "center",

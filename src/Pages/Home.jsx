@@ -98,28 +98,28 @@ const Home = () => {
         <Typography sx={{ ...Theme.font16Regular, textAlign: 'center', mt: 1 }}> Embrace Minimalist, where each element is chosen for its scientific merit, offering you authentic, effective skincare solutions.</Typography>
       </Box>
       <Grid container spacing={4} sx={{ justifyContent: 'center', alignItems: 'center', mt: 10 }}>
-        <Grid item xs={12} sm={6} md={3} sx={{  textAlign: 'center' }}>
+        <Grid item xs={12} sm={6} md={3} sx={{ textAlign: 'center' }}>
 
           <img src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898247/transparency_erpdod.webp" alt="" height={'60px'} />
           <Typography sx={{ ...Theme.font18SemiBold, my: 1, mt: 2 }}>Transparency</Typography>
           <Typography sx={{ ...Theme.font15Regular, my: 1 }}>Full disclosure of ingredients used & their concentration</Typography>
 
         </Grid>
-        <Grid item xs={12}  md={3} sx={{ textAlign: 'center' }}>
+        <Grid item xs={12} md={3} sx={{ textAlign: 'center' }}>
 
           <img src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898228/medical-research-256_1_piw2ax.webp" alt="" height={'60px'} />
           <Typography sx={{ ...Theme.font18SemiBold, my: 1, mt: 2 }}>Efficacy</Typography>
           <Typography sx={{ ...Theme.font15Regular, my: 1 }}>Formulations developed in our in-house laboratories</Typography>
 
         </Grid>
-        <Grid item xs={12}  md={3} sx={{ textAlign: 'center' }}>
+        <Grid item xs={12} md={3} sx={{ textAlign: 'center' }}>
 
           <img src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898214/affordable_zbzgde.webp" alt="" height={'60px'} />
           <Typography sx={{ ...Theme.font18SemiBold, my: 1, mt: 2 }}>Affordable</Typography>
           <Typography sx={{ ...Theme.font15Regular, my: 1 }}>Skincare, accessible to all</Typography>
 
         </Grid>
-        <Grid item xs={12}  md={3} sx={{ textAlign: 'center' }}>
+        <Grid item xs={12} md={3} sx={{ textAlign: 'center' }}>
 
           <img src="https://res.cloudinary.com/dam89m7fe/image/upload/v1777898236/only_the_best_eqftxe.webp" alt="" height={'60px'} />
           <Typography sx={{ ...Theme.font18SemiBold, my: 1, mt: 2 }}>Only the best</Typography>
